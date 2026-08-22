@@ -1,0 +1,1 @@
+Yapay zeka modelleri,büyük veri setleri üzerinde eğitilir.

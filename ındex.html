@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Güvenli Hesap Makinesi</title>
+	<style>
+		:root {
+			--ink: #17212b;
+			--muted: #687783;
+			--paper: #f7f4ed;
+			--panel: #fffdf9;
+			--accent: #d95d39;
+			--accent-dark: #b84628;
+			--line: #e8e1d6;
+			--shadow: 0 24px 60px rgba(53, 42, 31, 0.14);
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			min-height: 100vh;
+			margin: 0;
+			display: grid;
+			place-items: center;
+			padding: 24px;
+			color: var(--ink);
+			background:
+				radial-gradient(circle at 15% 15%, rgba(217, 93, 57, 0.14), transparent 28%),
+				radial-gradient(circle at 85% 80%, rgba(60, 128, 136, 0.13), transparent 30%),
+				var(--paper);
+			font-family: Georgia, "Times New Roman", serif;
+		}
+
+		.app { width: min(100%, 420px); }
+
+		.panel {
+			padding: clamp(28px, 7vw, 48px);
+			background: rgba(255, 253, 249, 0.92);
+			border: 1px solid rgba(232, 225, 214, 0.9);
+			border-radius: 8px;
+			box-shadow: var(--shadow);
+			animation: appear 500ms ease both;
+		}
+
+		.eyebrow {
+			margin: 0 0 10px;
+			color: var(--accent);
+			font: 700 0.75rem/1.2 Arial, sans-serif;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+		}
+
+		h1 { margin: 0 0 10px; font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1; }
+		.intro { margin: 0 0 28px; color: var(--muted); font: 0.98rem/1.5 Arial, sans-serif; }
+
+		label { display: block; margin: 18px 0 7px; font: 700 0.82rem Arial, sans-serif; }
+
+		input {
+			width: 100%;
+			padding: 13px 14px;
+			color: var(--ink);
+			background: #fff;
+			border: 1px solid var(--line);
+			border-radius: 5px;
+			outline: none;
+			font: 1rem Arial, sans-serif;
+			transition: border-color 150ms ease, box-shadow 150ms ease;
+		}
+
+		input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(217, 93, 57, 0.14); }
+
+		button {
+			border: 0;
+			border-radius: 5px;
+			cursor: pointer;
+			font: 700 0.95rem Arial, sans-serif;
+			transition: transform 150ms ease, background 150ms ease;
+		}
+
+		button:active { transform: translateY(1px); }
+
+		.primary {
+			width: 100%;
+			margin-top: 26px;
+			padding: 14px;
+			color: #fff;
+			background: var(--accent);
+		}
+
+		.primary:hover { background: var(--accent-dark); }
+
+		.error {
+			min-height: 20px;
+			margin: 14px 0 0;
+			color: #bd2f2f;
+			font: 0.86rem Arial, sans-serif;
+		}
+
+		.calculator-panel { padding: 24px; }
+		.calculator-header { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+		.calculator-header h1 { font-size: 2rem; }
+
+		.logout {
+			padding: 8px 11px;
+			color: var(--muted);
+			background: #f0ece4;
+			font-size: 0.75rem;
+		}
+
+		.logout:hover { color: var(--ink); background: #e6dfd3; }
+
+		.display {
+			width: 100%;
+			margin-bottom: 12px;
+			padding: 17px 14px;
+			overflow: hidden;
+			color: #fff;
+			background: #24343d;
+			border-radius: 5px;
+			text-align: right;
+			white-space: nowrap;
+			font: 2rem/1.1 Consolas, monospace;
+		}
+
+		.keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+		.key { aspect-ratio: 1.25; color: var(--ink); background: #f0ece4; }
+		.key:hover { background: #e4ddd2; }
+		.operator { color: #fff; background: #3e8088; }
+		.operator:hover { background: #326b72; }
+		.clear { color: #fff; background: var(--accent); }
+		.clear:hover { background: var(--accent-dark); }
+		.equals { grid-column: span 2; color: #fff; background: var(--accent); }
+		.equals:hover { background: var(--accent-dark); }
+		.hidden { display: none; }
+
+		@keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+		@media (max-width: 380px) { body { padding: 12px; } .calculator-panel { padding: 18px; } }
+	</style>
+</head>
+<body>
+	<main class="app">
+		<section id="loginPanel" class="panel" aria-labelledby="loginTitle">
+			<p class="eyebrow">Kişisel araç</p>
+			<h1 id="loginTitle">Giriş Yap</h1>
+			<p class="intro">Hesap makinesini kullanmak için bilgilerinizi girin.</p>
+			<form id="loginForm">
+				<label for="username">Kullanıcı adı</label>
+				<input id="username" name="username" type="text" autocomplete="username" required>
+				<label for="password">Şifre</label>
+				<input id="password" name="password" type="password" autocomplete="current-password" required>
+				<button class="primary" type="submit">Giriş Yap</button>
+				<p id="loginError" class="error" role="alert" aria-live="polite"></p>
+			</form>
+		</section>
+
+		<section id="calculatorPanel" class="panel calculator-panel hidden" aria-labelledby="calculatorTitle">
+			<div class="calculator-header">
+				<div>
+					<p class="eyebrow">Çalışma alanı</p>
+					<h1 id="calculatorTitle">Hesap Makinesi</h1>
+				</div>
+				<button id="logoutButton" class="logout" type="button">Çıkış</button>
+			</div>
+			<output id="display" class="display" aria-live="polite">0</output>
+			<div class="keys">
+				<button class="key clear" type="button" data-action="clear">C</button>
+				<button class="key operator" type="button" data-value="/">÷</button>
+				<button class="key operator" type="button" data-value="*">×</button>
+				<button class="key operator" type="button" data-value="-">−</button>
+				<button class="key" type="button" data-value="7">7</button>
+				<button class="key" type="button" data-value="8">8</button>
+				<button class="key" type="button" data-value="9">9</button>
+				<button class="key operator" type="button" data-value="+">+</button>
+				<button class="key" type="button" data-value="4">4</button>
+				<button class="key" type="button" data-value="5">5</button>
+				<button class="key" type="button" data-value="6">6</button>
+				<button class="key" type="button" data-value=".">.</button>
+				<button class="key" type="button" data-value="1">1</button>
+				<button class="key" type="button" data-value="2">2</button>
+				<button class="key" type="button" data-value="3">3</button>
+				<button class="key" type="button" data-value="0">0</button>
+				<button class="key equals" type="button" data-action="equals">=</button>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		const loginForm = document.getElementById('loginForm');
+		const loginPanel = document.getElementById('loginPanel');
+		const calculatorPanel = document.getElementById('calculatorPanel');
+		const loginError = document.getElementById('loginError');
+		const display = document.getElementById('display');
+		let expression = '';
+
+		loginForm.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const formData = new FormData(loginForm);
+			const isValid = formData.get('username') === 'admin' && formData.get('password') === '1234';
+
+			if (!isValid) {
+				loginError.textContent = 'Kullanıcı adı veya şifre hatalı.';
+				return;
+			}
+
+			loginError.textContent = '';
+			loginPanel.classList.add('hidden');
+			calculatorPanel.classList.remove('hidden');
+		});
+
+		document.querySelector('.keys').addEventListener('click', (event) => {
+			const button = event.target.closest('button');
+			if (!button) return;
+
+			if (button.dataset.action === 'clear') {
+				expression = '';
+				display.value = '0';
+				display.textContent = '0';
+				return;
+			}
+
+			if (button.dataset.action === 'equals') {
+				try {
+					if (!expression) return;
+					const result = Function(`"use strict"; return (${expression})`)();
+					if (!Number.isFinite(result)) throw new Error('Geçersiz sonuç');
+					expression = String(result);
+					display.textContent = expression;
+				} catch {
+					expression = '';
+					display.textContent = 'Hata';
+				}
+				return;
+			}
+
+			expression += button.dataset.value;
+			display.textContent = expression;
+		});
+
+		document.getElementById('logoutButton').addEventListener('click', () => {
+			expression = '';
+			display.textContent = '0';
+			loginForm.reset();
+			calculatorPanel.classList.add('hidden');
+			loginPanel.classList.remove('hidden');
+		});
+	</script>
+</body>
+</html>
