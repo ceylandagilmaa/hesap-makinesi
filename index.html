@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güvenli Hesap Makinesi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .calc-btn {
+            width: 21%;
+            margin: 1%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #007bff;
+        }
+        .calc-btn:hover {
+            background-color: #0056b3;
+        }
+        #calculator {
+            display: none;
+        }
+        #display {
+            width: 90%;
+            height: 40px;
+            font-size: 20px;
+            text-align: right;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="login-box" class="box">
+        <h2>Giriş Yap</h2>
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <input type="password" id="password" placeholder="Şifre">
+        <button onclick="login()">Giriş</button>
+        <p id="error" style="color:red; display:none;">Hatalı bilgi!</p>
+    </div>
+
+    <!-- HESAP MAKİNESİ EKRANI -->
+    <div id="calculator" class="box">
+        <h2>Hesap Makinesi</h2>
+        <input type="text" id="display" disabled>
+        <div>
+            <button class="calc-btn" onclick="append('7')">7</button>
+            <button class="calc-btn" onclick="append('8')">8</button>
+            <button class="calc-btn" onclick="append('9')">9</button>
+            <button class="calc-btn" onclick="append('/')">/</button>
+        </div>
+        <div>
+            <button class="calc-btn" onclick="append('4')">4</button>
+            <button class="calc-btn" onclick="append('5')">5</button>
+            <button class="calc-btn" onclick="append('6')">6</button>
+            <button class="calc-btn" onclick="append('*')">*</button>
+        </div>
+        <div>
+            <button class="calc-btn" onclick="append('1')">1</button>
+            <button class="calc-btn" onclick="append('2')">2</button>
+            <button class="calc-btn" onclick="append('3')">3</button>
+            <button class="calc-btn" onclick="append('-')">-</button>
+        </div>
+        <div>
+            <button class="calc-btn" onclick="clearDisplay()">C</button>
+            <button class="calc-btn" onclick="append('0')">0</button>
+            <button class="calc-btn" onclick="calculate()">=</button>
+            <button class="calc-btn" onclick="append('+')">+</button>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            var u = document.getElementById('username').value;
+            var p = document.getElementById('password').value;
+            if (u === 'admin' && p === '1234') {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('calculator').style.display = 'block';
+            } else {
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function append(val) {
+            document.getElementById('display').value += val;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function calculate() {
+            try {
+                document.getElementById('display').value = eval(document.getElementById('display').value);
+            } catch (e) {
+                document.getElementById('display').value = 'Hata';
+            }
+        }
+    </script>
+
+</body>
+</html>
